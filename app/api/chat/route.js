@@ -16,8 +16,8 @@ export async function POST(req) {
       });
     }
 
-    // Google Generative Language API Endpoint
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    // Official Stable Endpoint for Gemini 1.5 Flash
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const res = await fetch(url, {
       method: "POST",
@@ -30,13 +30,16 @@ export async function POST(req) {
             role: "user",
             parts: [{ text: prompt }]
           }
-        ]
+        ],
+        generationConfig: {
+          maxOutputTokens: 1000,
+          temperature: 0.7
+        }
       })
     });
 
     const data = await res.json();
 
-    // अगर Google कोई एरर लौटाए तो स्क्रीन पर साफ़ एरर दिखाएँ
     if (data.error) {
       return NextResponse.json({
         text: `Google API Error (${data.error.code}): ${data.error.message}`
