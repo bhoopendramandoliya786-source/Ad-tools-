@@ -2,11 +2,93 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import toolsData from "../data/tools.json";
+
+const TOOLS_DATA = [
+  {
+    slug: "youtube-tag-generator",
+    name: "YouTube Tag & Keyword Generator",
+    category: "Social Media",
+    type: "text",
+    description: "Generate top-ranking viral tags and keywords for YouTube Shorts and Long videos.",
+    promptPrefix: "Generate 20 high-ranking, comma-separated YouTube tags and keywords for this video topic:"
+  },
+  {
+    slug: "instagram-caption-generator",
+    name: "Instagram Viral Caption Maker",
+    category: "Social Media",
+    type: "text",
+    description: "Create catchy captions with hooks and trending hashtags for Instagram reels.",
+    promptPrefix: "Write 3 engaging Instagram captions with viral hooks and 15 relevant hashtags for:"
+  },
+  {
+    slug: "ai-essay-writer",
+    name: "AI Essay & Article Writer",
+    category: "Writing",
+    type: "text",
+    description: "Write well-structured essays, outlines, and college papers with zero plagiarism.",
+    promptPrefix: "Write a well-structured, comprehensive essay with an introduction, key arguments, and a conclusion on:"
+  },
+  {
+    slug: "flux-cyberpunk-art",
+    name: "Cyberpunk Neon Art Generator",
+    category: "Image",
+    type: "image",
+    description: "Generate high-definition cyberpunk characters and futuristic cityscapes.",
+    promptSuffix: "cyberpunk style, neon glow, futuristic city, highly detailed, 8k resolution, cinematic lighting"
+  },
+  {
+    slug: "flux-anime-generator",
+    name: "Anime Character Art Generator",
+    category: "Image",
+    type: "image",
+    description: "Transform any text idea into Japanese anime-style artwork using FLUX AI.",
+    promptSuffix: "masterpiece anime artwork, makoto shinkai style, vibrant colors, studio ghibli aesthetic, ultra high detail"
+  },
+  {
+    slug: "flux-realistic-portrait",
+    name: "Ultra-Realistic AI Portrait Maker",
+    category: "Image",
+    type: "image",
+    description: "Generate photorealistic human portraits with natural skin textures and cinematic lighting.",
+    promptSuffix: "photorealistic portrait, 85mm lens, natural lighting, sharp focus, skin pores, 8k uhd"
+  },
+  {
+    slug: "email-reply-generator",
+    name: "Professional Email Writer",
+    category: "Career",
+    type: "text",
+    description: "Write polite, corporate-ready emails and replies in seconds.",
+    promptPrefix: "Write a professional, polite, and clear corporate email response regarding:"
+  },
+  {
+    slug: "resume-bullet-points",
+    name: "Resume Bullet Points Enhancer",
+    category: "Career",
+    type: "text",
+    description: "Turn your job duties into impactful, metrics-driven bullet points for resumes.",
+    promptPrefix: "Rewrite these job responsibilities into 5 impactful, metric-driven resume bullet points starting with strong action verbs:"
+  },
+  {
+    slug: "story-plot-generator",
+    name: "Creative Story & Plot Generator",
+    category: "Writing",
+    type: "text",
+    description: "Brainstorm compelling plot twists, movie concepts, and fictional stories.",
+    promptPrefix: "Develop a captivating fiction story plot outline with character motivations and a surprise plot twist based on:"
+  },
+  {
+    slug: "code-debugger-ai",
+    name: "Instant Code Debugger & Explainer",
+    category: "Coding",
+    type: "text",
+    description: "Paste broken code and find errors with fixed code and explanations.",
+    promptPrefix: "Find the bugs in the following code, explain the issue simply, and provide the corrected version:"
+  }
+];
 
 export default function DynamicToolPage({ params }) {
   const { slug } = params;
-  const tool = toolsData.find((t) => t.slug === slug) || {
+  const tool = TOOLS_DATA.find((t) => t.slug === slug) || {
     name: slug.replace(/-/g, " "),
     category: "General",
     type: "text",
@@ -20,7 +102,6 @@ export default function DynamicToolPage({ params }) {
   const [timer, setTimer] = useState(15);
   const [adText, setAdText] = useState("⚡ Kling AI: Generate 4K Cinematic Clips Free");
 
-  // Auto-refreshing ads simulation
   useEffect(() => {
     const ads = [
       "⚡ Kling AI: Generate 4K Cinematic Clips Free",
@@ -41,7 +122,6 @@ export default function DynamicToolPage({ params }) {
     setOutput("");
     setTimer(15);
 
-    // 15s Timer to maximize ad viewing
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
@@ -80,7 +160,6 @@ export default function DynamicToolPage({ params }) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pb-28">
-      {/* Navigation */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
         <Link href="/" className="text-xs text-emerald-400 font-bold hover:underline flex items-center gap-1">
           &larr; Back to 500+ Tools
@@ -88,18 +167,15 @@ export default function DynamicToolPage({ params }) {
         <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-1 rounded">Category: {tool.category}</span>
       </div>
 
-      {/* Top Ad Unit */}
       <div className="ad-banner rounded-xl p-3 mb-6 text-center text-xs">
         <span className="text-[9px] uppercase tracking-widest text-slate-500 block mb-1">Sponsored Ad</span>
         <p className="font-bold text-slate-200">{adText}</p>
       </div>
 
-      {/* Main Tool Card */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
         <h1 className="text-2xl font-black text-white mb-1">{tool.name}</h1>
         <p className="text-xs text-slate-400 mb-6">{tool.description}</p>
 
-        {/* Input box */}
         <textarea
           rows={4}
           value={input}
@@ -108,7 +184,6 @@ export default function DynamicToolPage({ params }) {
           className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 mb-4"
         />
 
-        {/* Action Button */}
         <button
           onClick={handleAction}
           disabled={loading}
@@ -117,7 +192,6 @@ export default function DynamicToolPage({ params }) {
           {loading ? `AI Processing (${timer}s)...` : `Generate with ${tool.name}`}
         </button>
 
-        {/* Outputs */}
         {loading && (
           <div className="mt-6 text-xs text-emerald-400 animate-pulse text-center">
             Communicating with GPU cluster... Please do not close the window.
@@ -145,7 +219,6 @@ export default function DynamicToolPage({ params }) {
         )}
       </div>
 
-      {/* Sticky Bottom Ad */}
       <div className="fixed bottom-0 inset-x-0 bg-slate-900 border-t border-slate-800 p-2.5 z-50">
         <div className="max-w-4xl mx-auto flex items-center justify-between text-xs px-2">
           <span className="truncate text-slate-300">⚡ {adText}</span>
