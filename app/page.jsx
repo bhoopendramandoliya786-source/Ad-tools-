@@ -81,7 +81,6 @@ export default function HomePage() {
     { title: "🚀 Create 4K AI Cinematic Videos with Kling AI - Free Trial", link: "https://klingai.com" }
   ];
 
-  // Auto-refresh ads every 15s
   useEffect(() => {
     const timer = setInterval(() => {
       setAdIndex((prev) => (prev + 1) % ads.length);
@@ -111,7 +110,7 @@ export default function HomePage() {
   return (
     <div className="bg-[#070b14] text-slate-200 min-h-screen font-sans pb-28">
       
-      {/* Top Green Notification */}
+      {/* Top Notification */}
       <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white text-xs py-2 px-4 text-center font-medium">
         ⚡ Free AI for chat, image generation & text to speech. 100% Free Forever, No Signup Needed.
       </div>
@@ -134,7 +133,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 1. TOP HEADER AUTO-REFRESH AD */}
+      {/* Top Header Ad */}
       <div className="max-w-3xl mx-auto px-4 mt-4">
         <div className="ad-banner rounded-xl p-3 text-center min-h-[90px] flex flex-col items-center justify-center border border-dashed border-slate-700 bg-slate-900/60">
           <span className="text-[9px] uppercase tracking-widest text-slate-500 mb-1">Sponsored Advertisement</span>
@@ -145,7 +144,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* HERO SECTION (Chat & Multi-tab box) */}
+      {/* Hero Section */}
       <section className="max-w-3xl mx-auto px-4 pt-8 text-center">
         <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-3">
           Free AI for chat, image generation & text to speech, <span className="text-emerald-400">no account needed</span>
@@ -194,7 +193,7 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Social Proof / YouTube Bar */}
+        {/* Social Bar */}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <a href="https://youtube.com" target="_blank" className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2">
             ▶ Follow on YouTube <span className="bg-black/30 px-1.5 py-0.5 rounded text-[10px]">779</span>
@@ -202,7 +201,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. MID-FEED AUTO-REFRESH AD */}
+      {/* Mid Feed Ad */}
       <div className="max-w-3xl mx-auto px-4 my-8">
         <div className="ad-banner rounded-xl p-4 text-center border border-dashed border-slate-700 bg-slate-900/60">
           <span className="text-[9px] uppercase tracking-widest text-slate-500 block mb-1">Sponsored Ad</span>
@@ -210,7 +209,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* VERTICAL TOOL CARDS FEED (बिल्कुल स्क्रीनशॉट की तरह लंबा स्क्रॉल) */}
+      {/* Vertical Tool Cards Feed (लंबे कार्ड्स + हर कार्ड के बीच ऐड) */}
       <section className="max-w-3xl mx-auto px-4 space-y-8">
         <div className="text-center">
           <h2 className="text-xl font-black text-white">Best Free AI tools on AIFreeForever</h2>
@@ -219,8 +218,6 @@ export default function HomePage() {
 
         {FEATURED_TOOLS.map((tool, idx) => (
           <div key={tool.slug} className="space-y-6">
-            
-            {/* Tool Card */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl hover:border-slate-700 transition">
               <div className="h-48 sm:h-64 w-full overflow-hidden relative">
                 <img src={tool.img} alt={tool.title} className="w-full h-full object-cover" />
@@ -241,17 +238,16 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* AD BANNER BETWEEN EVERY SINGLE TOOL CARD */}
+            {/* Ad Banner between tool cards */}
             <div className="ad-banner rounded-xl p-3.5 text-center border border-dashed border-slate-700 bg-slate-900/40">
               <span className="text-[9px] uppercase tracking-widest text-slate-500 block mb-0.5">Sponsored Partner</span>
               <p className="font-semibold text-slate-300 text-xs">{ads[(adIndex + idx) % ads.length].title}</p>
             </div>
-
           </div>
         ))}
       </section>
 
-      {/* BOTTOM DIRECTORY FOOTER (Programmatic SEO हज़ारों रैंकिंग्स के लिए) */}
+      {/* Directory Footer */}
       <footer className="max-w-3xl mx-auto px-4 mt-16 pt-8 border-t border-slate-800">
         <h4 className="text-sm font-bold text-slate-300 mb-4">Popular AI Utilities</h4>
         <div className="flex flex-wrap gap-2 text-xs">
@@ -266,11 +262,11 @@ export default function HomePage() {
           ))}
         </div>
         <p className="text-[11px] text-slate-500 mt-8 text-center">
-          © 2026 AIFreeForever Clone Hub. All rights reserved. Free AI Utilities for everyone.
+          © 2026 AIFreeForever Hub. All rights reserved.
         </p>
       </footer>
 
-      {/* 3. STICKY BOTTOM AD BAR (Fixed Everywhere) */}
+      {/* Sticky Bottom Ad */}
       <div className="fixed bottom-0 inset-x-0 bg-[#0d1322] border-t border-slate-800 p-2.5 z-50">
         <div className="max-w-3xl mx-auto flex items-center justify-between text-xs px-2">
           <span className="truncate text-slate-300">🔥 Sponsored: {ads[adIndex].title}</span>
