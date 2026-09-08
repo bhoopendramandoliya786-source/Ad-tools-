@@ -5,59 +5,53 @@ export async function POST(req) {
     const { prompt } = await req.json();
 
     if (!prompt) {
-      return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+      return NextResponse.json({ error: "Prompt required" }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = (process.env.GEMINI_API_KEY || "").trim();
 
-    // 1. अगर Gemini Key मौजूद है तो पहले उससे कोशिश करो
-    if (apiKey) {
-      try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-          })
-        });
-        const data = await res.json();
-        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (reply) {
-          return NextResponse.json({ text: reply });
-        }
-      } catch (e) {
-        // Fallback to secondary engine below
-      }
+    // 1. अगर API Key नहीं है तो साफ़ बताओ
+    if (!apiKey) {
+      return NextResponse.json({
+        text: "Error: GEMINI_API_KEY Vercel में नहीं मिली। कृपया Vercel Settings -> Environment Variables में GEMINI_API_KEY जोड़कर Redeploy करें।"
+      });
     }
 
-    // 2. बुलेटप्रूफ फॉलबैक: डकडकगो / क्लाउड AI एंडपॉइंट (कभी ब्लॉक या एरर नहीं देगा)
-    const fallbackRes = await fetch("https://text.pollinations.ai/", {
+    // 2. Official Gemini 1.5 Flash Call
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: [{ role: "user", content: prompt }],
-        model: "openai"
+        contents: [
+          {
+            parts: [{ text: prompt }]
+          }
+        ]
       })
     });
 
-    const fallbackText = await fallbackRes.text();
-    if (fallbackText && !fallbackText.includes("error")) {
-      return NextResponse.json({ text: fallbackText });
+    const data = await res.json();
+
+    // अगर Google की तरफ से कोई एरर आए (जैसे Invalid Key या Quota)
+    if (data.error) {
+      return NextResponse.json({
+        text: `Google Gemini API Error: ${data.error.message || "Invalid Key / Quota"}`
+      });
     }
 
-    // 3. स्मार्ट लोकल जनरेटर (यदि कोई भी API डाउन हो तो भी यूज़र को खाली हाथ न लौटाए)
-    const defaultOutput = `### Generated Output for: "${prompt.slice(0, 50)}..."\n\n` +
-      `• Highly relevant optimization generated successfully.\n` +
-      `• 100% clean formatting, ready to copy and paste.\n` +
-      `• Keywords / Tags: #Viral #Trending #AI #FreeTools #ContentCreator\n\n` +
-      `Summary: Your request was processed via high-speed cloud node.`;
+    const outputText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    return NextResponse.json({ text: defaultOutput });
+    if (!outputText) {
+      return NextResponse.json({
+        text: "AI response empty. Please try a different topic."
+      });
+    }
+
+    return NextResponse.json({ text: outputText });
 
   } catch (err) {
-    return NextResponse.json({ 
-      text: "Success: Output generated. Please refine your prompt if you need longer output." 
-    });
+    return NextResponse.json({ text: `Server Fetch Error: ${err.message}` }, { status: 500 });
   }
 }
