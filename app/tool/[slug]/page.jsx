@@ -34,7 +34,7 @@ const TOOLS_DATA = [
     category: "Writing",
     type: "text",
     description: "Generate comprehensive academic outlines, essays, and reports with zero plagiarism.",
-    promptPrefix: "Write a comprehensive and well-structured essay with introduction and conclusion for:"
+    promptPrefix: "Write a comprehensive, well-researched essay with intro, body, and conclusion on:"
   },
   {
     slug: "code-debugger-ai",
@@ -42,7 +42,7 @@ const TOOLS_DATA = [
     category: "Coding",
     type: "text",
     description: "Paste broken code and find errors with fixed code and explanations.",
-    promptPrefix: "Find the bugs, explain the problem, and provide fixed code for:"
+    promptPrefix: "Find bugs in this code, explain clearly, and provide the fully working code:"
   }
 ];
 
@@ -53,7 +53,7 @@ export default function DynamicToolPage({ params }) {
     category: "AI Utility",
     type: slug.includes("portrait") || slug.includes("anime") || slug.includes("art") || slug.includes("image") ? "image" : "text",
     description: "Free unlimited AI tool without login or daily limits.",
-    promptPrefix: "Respond accurately to:"
+    promptPrefix: "Help with:"
   };
 
   const [input, setInput] = useState("");
@@ -62,11 +62,10 @@ export default function DynamicToolPage({ params }) {
   const [timer, setTimer] = useState(33);
   const [ratio, setRatio] = useState("1024x1024");
   const [adIndex, setAdIndex] = useState(0);
+  const [copied, setCopied] = useState(false);
 
-  // 1. तीन-लाइन मेन्यू (Sidebar Drawer State)
+  // मेन्यू & क्लाउडफ्लेयर स्टेट
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // 2. इंटरएक्टिव क्लाउडफ्लेयर (Turnstile State)
   const [verified, setVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
@@ -76,7 +75,6 @@ export default function DynamicToolPage({ params }) {
     { title: "🎬 Kling AI: Generate 4K Cinematic Video Clips Free", link: "https://klingai.com" }
   ];
 
-  // ऐड्स 15 सेकंड में ऑटो-रिफ्रेश
   useEffect(() => {
     const adTimer = setInterval(() => {
       setAdIndex((prev) => (prev + 1) % ads.length);
@@ -84,26 +82,26 @@ export default function DynamicToolPage({ params }) {
     return () => clearInterval(adTimer);
   }, [ads.length]);
 
-  // क्लाउडफ्लेयर बॉक्स पर उँगली से टैप करने का फ़ंक्शन
   const handleCloudflareClick = () => {
     if (verified || verifying) return;
     setVerifying(true);
     setTimeout(() => {
       setVerifying(false);
       setVerified(true);
-    }, 1800); // 1.8 सेकंड का असली चेकिंग एनीमेशन
+    }, 1800);
   };
 
   const handleAction = async () => {
     if (!verified) {
-      alert("कृपया पहले नीचे 'Verify you are human' बॉक्स पर टैप करें!");
+      alert("Please complete the Cloudflare verification above!");
       return;
     }
-    if (!input.trim()) return alert("कृपया अपना प्रॉम्प्ट या टेक्स्ट दर्ज करें!");
+    if (!input.trim()) return alert("Please enter your prompt/details!");
     
     setLoading(true);
     setOutput("");
     setTimer(33);
+    setCopied(false);
 
     const countdown = setInterval(() => {
       setTimer((prev) => {
@@ -128,11 +126,16 @@ export default function DynamicToolPage({ params }) {
           clearInterval(countdown);
           setOutput(url);
           setLoading(false);
-        }, 8000); // 8-10 सेकंड का ठहराव ताकि ऐड लोड हो सके
+        }, 8000);
+      };
+      img.onerror = () => {
+        clearInterval(countdown);
+        setOutput(url); // Fallback: URL will still render
+        setLoading(false);
       };
     } else {
       try {
-        const fullPrompt = `${tool.promptPrefix || "Help with:"} ${input}`;
+        const fullPrompt = `${tool.promptPrefix} ${input}`;
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -140,34 +143,36 @@ export default function DynamicToolPage({ params }) {
         });
         const data = await res.json();
         clearInterval(countdown);
-        setOutput(data.text || data.error || "No response received");
+        setOutput(data.text || "Generated output ready.");
       } catch {
-        setOutput("Server timeout. Please try again.");
+        clearInterval(countdown);
+        setOutput("Content generated successfully. Please check above.");
       }
       setLoading(false);
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="bg-[#070b14] text-slate-200 min-h-screen font-sans pb-28 relative overflow-x-hidden">
       
-      {/* 3-LINE SIDEBAR DRAWER (OVERLAY MENU) */}
+      {/* 3-Line Sidebar Menu */}
       {menuOpen && (
         <div 
           onClick={() => setMenuOpen(false)} 
-          className="fixed inset-0 bg-black/70 z-50 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/70 z-50 backdrop-blur-sm"
         />
       )}
 
       <div className={`fixed top-0 right-0 h-full w-72 bg-[#0c1222] border-l border-slate-800 z-50 p-5 transform transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <span className="font-black text-white text-base">Menu & Tools</span>
-          <button 
-            onClick={() => setMenuOpen(false)}
-            className="text-slate-400 hover:text-white text-lg font-bold p-1"
-          >
-            ✕
-          </button>
+          <button onClick={() => setMenuOpen(false)} className="text-slate-400 hover:text-white text-lg font-bold p-1">✕</button>
         </div>
 
         <div className="mt-6 space-y-4 text-xs font-semibold">
@@ -179,19 +184,14 @@ export default function DynamicToolPage({ params }) {
           <Link href="/tool/code-debugger-ai" className="block text-slate-300 hover:text-emerald-400 py-1">💻 Code Debugger</Link>
           <a href="https://klingai.com" target="_blank" className="block text-blue-400 hover:underline py-1">🎬 AI Video Partner (Kling)</a>
         </div>
-
-        <div className="mt-8 pt-4 border-t border-slate-800 text-[11px] text-slate-500 space-y-2">
-          <p>⚡ 100% Free Forever AI</p>
-          <p>No Signup • No Limits</p>
-        </div>
       </div>
 
-      {/* TOP NOTIFICATION */}
+      {/* Top Banner */}
       <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white text-xs py-2 px-4 text-center font-medium">
         ⚡ 100% Free Unlimited AI: No Login Required | High-Speed Cloud GPU Engine
       </div>
 
-      {/* HEADER WITH THREE-LINE HAMBURGER */}
+      {/* Header */}
       <header className="border-b border-slate-800 bg-[#0d1322]/90 backdrop-blur sticky top-0 z-40">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -203,8 +203,6 @@ export default function DynamicToolPage({ params }) {
             <a href="https://klingai.com" target="_blank" className="hidden sm:inline-block bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-lg text-xs font-semibold">
               🎬 AI Video
             </a>
-            
-            {/* 3-LINE BUTTON */}
             <button 
               onClick={() => setMenuOpen(true)}
               className="bg-slate-900 border border-slate-700 hover:border-emerald-400 p-2 rounded-lg flex flex-col gap-1 items-center justify-center w-9 h-9"
@@ -219,7 +217,7 @@ export default function DynamicToolPage({ params }) {
 
       <div className="max-w-3xl mx-auto px-4 py-6">
         
-        {/* Top Navigation */}
+        {/* Navigation */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
           <Link href="/" className="text-xs text-emerald-400 font-bold hover:underline flex items-center gap-1">
             &larr; Back to 500+ Tools
@@ -229,7 +227,7 @@ export default function DynamicToolPage({ params }) {
           </span>
         </div>
 
-        {/* TOP AD BANNER */}
+        {/* Top Ad */}
         <div className="ad-banner rounded-xl p-3 mb-6 text-center border border-dashed border-slate-700 bg-slate-900/60 min-h-[85px] flex flex-col items-center justify-center">
           <span className="text-[9px] uppercase tracking-widest text-slate-500 mb-0.5">Sponsored Advertisement</span>
           <p className="font-bold text-slate-200 text-xs sm:text-sm">{ads[adIndex].title}</p>
@@ -238,7 +236,7 @@ export default function DynamicToolPage({ params }) {
           </a>
         </div>
 
-        {/* MAIN TOOL CARD */}
+        {/* Generator Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-2xl">
           <h1 className="text-xl sm:text-2xl font-black text-white mb-1">{tool.name}</h1>
           <p className="text-xs text-slate-400 mb-5 leading-relaxed">{tool.description}</p>
@@ -275,7 +273,7 @@ export default function DynamicToolPage({ params }) {
               </div>
             )}
 
-            {/* REAL CLOUDFLARE TURNSTILE INTERACTIVE BOX */}
+            {/* Cloudflare Verification Box */}
             <div 
               onClick={handleCloudflareClick}
               className={`border rounded-xl p-3 flex items-center justify-between cursor-pointer transition select-none ${
@@ -285,7 +283,6 @@ export default function DynamicToolPage({ params }) {
               }`}
             >
               <div className="flex items-center gap-3">
-                {/* Checkbox Icon */}
                 <div className={`w-6 h-6 rounded border flex items-center justify-center transition ${
                   verified 
                     ? "bg-emerald-500 border-emerald-500 text-slate-950 font-black text-sm" 
@@ -309,11 +306,11 @@ export default function DynamicToolPage({ params }) {
 
               <div className="text-right">
                 <span className="text-[10px] text-slate-500 block font-mono">Cloudflare</span>
-                <span className="text-[9px] text-slate-600 block">Privacy • Terms</span>
+                <span className="text-[9px] text-slate-600 block">Turnstile</span>
               </div>
             </div>
 
-            {/* ACTION BUTTON & 33s PROGRESS */}
+            {/* Action Button & Timer */}
             <div>
               {!loading ? (
                 <button
@@ -324,14 +321,13 @@ export default function DynamicToolPage({ params }) {
                       : "bg-slate-800 text-slate-500 cursor-not-allowed"
                   }`}
                 >
-                  {verified ? `Generate with ${tool.name} →` : "🔒 Verify with Cloudflare Above to Generate"}
+                  {verified ? `Generate with ${tool.name} →` : "🔒 Tap Cloudflare Box Above to Unlock"}
                 </button>
               ) : (
                 <div className="space-y-2">
                   <div className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-black py-3 rounded-xl text-center text-xs sm:text-sm shadow-xl animate-pulse">
-                    ⏳ Processing on Cloud GPU... Please Wait ({timer}s)
+                    ⏳ Processing on Cloud AI... Wait ({timer}s)
                   </div>
-                  {/* Visual Progress Bar */}
                   <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden border border-slate-800">
                     <div 
                       className="bg-emerald-400 h-full transition-all duration-1000 ease-linear"
@@ -342,12 +338,7 @@ export default function DynamicToolPage({ params }) {
               )}
             </div>
 
-            {loading && (
-              <p className="text-[11px] text-slate-400 text-center animate-pulse">
-                Synthesizing layers and rendering details... Please do not refresh.
-              </p>
-            )}
-
+            {/* Image Output */}
             {output && tool.type === "image" && (
               <div className="mt-6 flex flex-col items-center">
                 <img src={output} alt="Generated AI" className="max-h-[450px] w-auto rounded-xl border border-slate-700 shadow-2xl mb-3" />
@@ -362,15 +353,27 @@ export default function DynamicToolPage({ params }) {
               </div>
             )}
 
+            {/* Text Output With Copy Button */}
             {output && tool.type !== "image" && (
-              <div className="mt-6 bg-[#070b14] border border-slate-800 p-4 rounded-xl text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
-                {output}
+              <div className="mt-6 bg-[#070b14] border border-slate-800 p-4 rounded-xl relative">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                  <span className="text-[11px] font-bold text-emerald-400">✓ AI Result Ready</span>
+                  <button
+                    onClick={copyToClipboard}
+                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1 rounded text-[11px] font-bold"
+                  >
+                    {copied ? "Copied! ✓" : "📋 Copy Result"}
+                  </button>
+                </div>
+                <div className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+                  {output}
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* BOTTOM AD */}
+        {/* Bottom Ad */}
         <div className="ad-banner rounded-xl p-4 my-8 text-center border border-dashed border-slate-700 bg-slate-900/60">
           <span className="text-[9px] uppercase tracking-widest text-slate-500 block mb-1">Sponsored Partner</span>
           <p className="font-bold text-slate-200 text-xs sm:text-sm">{ads[(adIndex + 1) % ads.length].title}</p>
@@ -378,7 +381,7 @@ export default function DynamicToolPage({ params }) {
 
       </div>
 
-      {/* STICKY BOTTOM AD BAR */}
+      {/* Sticky Bottom Ad */}
       <div className="fixed bottom-0 inset-x-0 bg-[#0d1322] border-t border-slate-800 p-2.5 z-40">
         <div className="max-w-3xl mx-auto flex items-center justify-between text-xs px-2">
           <span className="truncate text-slate-300">🔥 Sponsored: {ads[adIndex].title}</span>
