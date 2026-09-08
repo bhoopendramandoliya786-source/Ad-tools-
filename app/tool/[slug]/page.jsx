@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import toolsData from "@/data/tools.json";
+import toolsData from "../data/tools.json";
 
 export default function DynamicToolPage({ params }) {
   const { slug } = params;
