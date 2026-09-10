@@ -2,7 +2,7 @@ import "./globals.css";
 import Script from "next/script";
 
 export const metadata = {
-  metadataBase: new URL("https://education-platform1.vercel.app"),
+  metadataBase: new URL("https://ad-tools-blue.vercel.app"),
   title: "AI Free Forever - 100% Free Unlimited AI Tools (No Sign-up)",
   description: "Free AI platform for FLUX 4K image generation, YouTube viral tags, AI essay writing, and background removal. No login or credit card required.",
   keywords: [
@@ -16,7 +16,7 @@ export const metadata = {
   openGraph: {
     title: "AI Free Forever - Unlimited AI Suite",
     description: "Generate 4K images, viral YouTube tags, and essays for free with zero sign-up.",
-    url: "https://education-platform1.vercel.app",
+    url: "https://ad-tools-blue.vercel.app",
     siteName: "AI Free Forever",
     locale: "en_US",
     type: "website",
@@ -31,7 +31,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="canonical" href="https://education-platform1.vercel.app" />
+        <link rel="canonical" href="https://ad-tools-blue.vercel.app" />
+        
         {/* Google Schema Markup for Instant Rich Snippets */}
         <script
           type="application/ld+json"
@@ -40,7 +41,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "WebApplication",
               "name": "AI Free Forever",
-              "url": "https://education-platform1.vercel.app",
+              "url": "https://ad-tools-blue.vercel.app",
               "applicationCategory": "MultimediaApplication",
               "operatingSystem": "All",
               "offers": {
@@ -55,7 +56,7 @@ export default function RootLayout({ children }) {
       <body className="bg-[#070b14] text-slate-100 antialiased selection:bg-emerald-500 selection:text-black">
         {children}
 
-        {/* Adsterra Official Social Bar Script */}
+        {/* Adsterra Social Bar Monetization Script */}
         <Script
           src="https://pl31272224.profitableratecpmnetwork.com/23/a4/81/23a481987c4cec3af51167586e84a09b.js"
           strategy="afterInteractive"
@@ -63,4 +64,4 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
-        }
+}
