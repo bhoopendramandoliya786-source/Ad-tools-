@@ -3,8 +3,59 @@
 import React from "react";
 import Link from "next/link";
 
-// In-file AdBanner component to avoid module not found errors
-function AdBanner() {
+// 1. New 300x250 Banner Unit
+function AdBanner300x250() {
+  const adHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            min-height: 250px;
+          }
+        </style>
+      </head>
+      <body>
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'dc62cc82ab212ad9b8aee581aa254ffc',
+            'format' : 'iframe',
+            'height' : 250,
+            'width' : 300,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="https://www.highrevenueformat.com/dc62cc82ab212ad9b8aee581aa254ffc/invoke.js"></script>
+      </body>
+    </html>
+  `;
+
+  return (
+    <div className="w-full flex justify-center items-center my-6 overflow-hidden">
+      <iframe
+        title="Sponsored 300x250 Ad"
+        srcDoc={adHtml}
+        style={{
+          width: "300px",
+          height: "250px",
+          border: "none",
+          overflow: "hidden",
+        }}
+        scrolling="no"
+      />
+    </div>
+  );
+}
+
+// 2. Native Banner Unit
+function AdNativeBanner() {
   const adHtml = `
     <!DOCTYPE html>
     <html>
@@ -32,7 +83,7 @@ function AdBanner() {
   return (
     <div className="w-full flex justify-center items-center my-6 overflow-hidden">
       <iframe
-        title="Sponsored Ad"
+        title="Sponsored Native Ad"
         srcDoc={adHtml}
         style={{
           width: "100%",
@@ -143,13 +194,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Top Native Banner Slot */}
-      <div className="w-full max-w-3xl px-4">
-        <AdBanner />
-      </div>
-
-      {/* Hero Section */}
-      <section className="w-full max-w-2xl px-4 text-center mt-2 mb-6">
+      {/* Hero Intro */}
+      <section className="w-full max-w-2xl px-4 text-center mt-4 mb-6">
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
           Free AI for chat, image generation & text to speech,{" "}
           <span className="text-emerald-400">no account needed</span>
@@ -201,7 +247,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Tools List with Banners Between Cards */}
+      {/* Placement 1: Top 300x250 Banner Slot */}
+      <div className="w-full max-w-3xl px-4">
+        <AdBanner300x250 />
+      </div>
+
+      {/* Tools List with Native Banner in Between */}
       <section className="w-full max-w-2xl px-4 mt-6">
         <div className="text-center mb-6">
           <h2 className="text-lg font-bold text-slate-100">Best Free AI tools on AIFreeForever</h2>
@@ -209,7 +260,7 @@ export default function HomePage() {
         </div>
 
         <div className="flex flex-col gap-6">
-          {TOOLS.map((t) => (
+          {TOOLS.map((t, idx) => (
             <React.Fragment key={t.slug}>
               <div className="bg-[#0d1424] border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
                 <div className="relative h-44 w-full bg-slate-800">
@@ -231,14 +282,21 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Native Banner Slot between cards */}
-              <div className="w-full">
-                <AdBanner />
-              </div>
+              {/* Placement 2: Native Banner Slot placed in middle after 3rd item */}
+              {idx === 2 && (
+                <div className="w-full">
+                  <AdNativeBanner />
+                </div>
+              )}
             </React.Fragment>
           ))}
         </div>
       </section>
+
+      {/* Placement 3: Bottom 300x250 Banner Slot */}
+      <div className="w-full max-w-3xl px-4 mt-6">
+        <AdBanner300x250 />
+      </div>
 
       {/* Popular AI Utilities Tags */}
       <section className="w-full max-w-2xl px-4 mt-8 mb-16">
