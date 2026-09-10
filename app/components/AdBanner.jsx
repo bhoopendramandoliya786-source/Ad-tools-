@@ -1,31 +1,44 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 export default function AdBanner() {
-  const bannerRef = useRef(null);
-
-  useEffect(() => {
-    if (!bannerRef.current) return;
-
-    // पुराने ऐड को साफ़ करके नया इन्वोक करें
-    bannerRef.current.innerHTML = "";
-
-    const container = document.createElement("div");
-    container.id = "container-41ed1e7c5d965345f47f0bf502ff0908";
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.setAttribute("data-cfasync", "false");
-    script.src = "https://pl31273171.profitableratecpmnetwork.com/41ed1e7c5d965345f47f0bf502ff0908/invoke.js";
-
-    bannerRef.current.appendChild(container);
-    bannerRef.current.appendChild(script);
-  }, []);
+  const adHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            min-height: 100px;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="container-41ed1e7c5d965345f47f0bf502ff0908"></div>
+        <script async="async" data-cfasync="false" src="https://pl31273171.profitableratecpmnetwork.com/41ed1e7c5d965345f47f0bf502ff0908/invoke.js"></script>
+      </body>
+    </html>
+  `;
 
   return (
-    <div className="w-full flex justify-center items-center my-6 min-h-[100px] overflow-hidden">
-      <div ref={bannerRef} className="w-full max-w-[728px] flex justify-center items-center" />
+    <div className="w-full flex justify-center items-center my-6 overflow-hidden">
+      <iframe
+        title="Sponsored Ad"
+        srcDoc={adHtml}
+        style={{
+          width: "100%",
+          maxWidth: "728px",
+          height: "120px",
+          border: "none",
+          overflow: "hidden",
+        }}
+        scrolling="no"
+      />
     </div>
   );
 }
