@@ -13,6 +13,9 @@ export const metadata = {
     "free midjourney alternative",
     "unlimited ai tools"
   ],
+  verification: {
+    google: "mjwnFJ_8h6tNf1HgsE9WVZyprx1aqlRsJQhA8DExR0s",
+  },
   openGraph: {
     title: "AI Free Forever - Unlimited AI Suite",
     description: "Generate 4K images, viral YouTube tags, and essays for free with zero sign-up.",
@@ -32,6 +35,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="canonical" href="https://ad-tools-blue.vercel.app" />
+        <meta name="google-site-verification" content="mjwnFJ_8h6tNf1HgsE9WVZyprx1aqlRsJQhA8DExR0s" />
         
         {/* Google Schema Markup for Instant Rich Snippets */}
         <script
